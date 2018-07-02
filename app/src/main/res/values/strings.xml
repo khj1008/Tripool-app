@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Tripool</string>
+    <string name="kakao_app_key">2db6d34ce85c3f446a140e63a3bc7373</string>
+    <string name="button">Button</string>
+    <string name="server_key">AAAAyvesoOo:APA91bEBlI3N_JOd0pNJ-Jnu-u8u9VKkS9m9Py1fme2uHwWDQZ1QhevxcnHeWwAgE8CNUpGtWCYUQ4tkNLz5bXKhO1svMe6I6kcgCBZB73jlEux8bp5wpElJmr_jV-rlfXsaBFBrCqE3</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_triplist">여행목록</string>
+</resources>

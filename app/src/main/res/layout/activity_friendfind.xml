@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="5dp"
+    tools:context=".activity.FriendfindActivity">
+
+    <TextView
+        android:id="@+id/find_friend"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:text="친구 추가"
+        android:textAlignment="center" />
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="300dp"
+        android:layout_height="1dp"
+        android:layout_margin="5dp"
+        android:background="@android:color/darker_gray" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/findfriend_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Email :"
+                android:textAlignment="center" />
+
+            <EditText
+                android:id="@+id/findfriend_email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:hint="친구의 email을 입력하세요."
+                android:inputType="textEmailAddress"
+                android:labelFor="@+id/find" />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/confirmfriend_layout"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_margin="5dp">
+
+            <ImageView
+                android:id="@+id/findfriend_image"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="36dp"
+                android:layout_weight="1"
+                android:src="@drawable/kakao_default_profile_image" />
+
+            <TextView
+                android:id="@+id/findfriend_nickname"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginEnd="95dp"
+                android:layout_marginTop="10dp"
+                android:layout_weight="4"
+                android:text="이름"
+                android:textAlignment="center"
+                android:textSize="18sp" />
+        </RelativeLayout>
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/findFriend_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="확 인" />
+
+        <Button
+            android:id="@+id/findFriend_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="취 소" />
+    </LinearLayout>
+</LinearLayout>
