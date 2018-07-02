@@ -77,7 +77,7 @@ public class FriendacceptActivity extends Activity implements View.OnClickListen
 
         MultiTransformation mul=new MultiTransformation(new CircleCrop(),new CenterCrop());
         Glide.with(getApplicationContext()).load(friend_thumbnail_image).apply(RequestOptions.bitmapTransform(mul)).into(acceptfriend_image);
-        acceptfriend_text.setText(friend_nickName+"님이 친구요청을 보냈습니다!");
+        acceptfriend_text.setText(friend_nickName+"님이 친구요청을 보냈습니다!!");
 
         acceptfriend_ok.setOnClickListener(this);
         acceptfriend_reject.setOnClickListener(this);
