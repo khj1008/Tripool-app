@@ -26,9 +26,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Log.d(TAG,"from:"+from);
         Log.d(TAG,notification_title);
         Log.d(TAG,notification_body);
+
+        //알림 클릭시 이벤트(백그라운드에서 액티비티 실행시 앱이 Resume되면서 수락 액티비티 실행 or 백그라운드에서 액티비티 미 실행시 수락 액티비티만 실행)
         String noti_clcik=remoteMessage.getNotification().getClickAction();
         Intent click_intent=new Intent(noti_clcik);
-        click_intent.putExtra("action","request_friend");
         click_intent.putExtra("friend_id",user_id);
         click_intent.putExtra("nickName",nickName);
         click_intent.putExtra("email",email);

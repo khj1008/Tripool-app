@@ -56,17 +56,6 @@ public class MainActivity extends AppCompatActivity implements page_Home.OnFragm
         application.buildNetworkService("210.102.181.158",62005);
         networkService= ApplicationController.getInstance().getNetworkService();
 
-        //친구요청 알림 클릭시 넘어오는 intent처리
-        Intent intent=getIntent();
-        action=intent.getStringExtra("action");
-        if (action.equals("request_friend")) {
-            Intent friendAccept=new Intent(getApplicationContext(),FriendacceptActivity.class);
-            friendAccept.putExtra("friend_id",user_id);
-            friendAccept.putExtra("nickName",nickName);
-            friendAccept.putExtra("email",email);
-            friendAccept.putExtra("thumbnail_image",thumbnail_image);
-            startActivity(friendAccept);
-        }
 
 
         PageAdapter pageAdapter=new PageAdapter(getSupportFragmentManager(),this);
