@@ -75,7 +75,6 @@ public class TriplistActivity extends AppCompatActivity implements AdapterView.O
         listView=findViewById(R.id.triplist_view);
         listView.setOnItemLongClickListener(this);
         tripAdapter=new TripAdapter(getApplicationContext());
-       // getTrip(user_id);
 
     }
 

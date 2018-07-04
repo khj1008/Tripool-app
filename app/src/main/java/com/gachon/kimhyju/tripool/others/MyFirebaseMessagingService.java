@@ -28,6 +28,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Log.d(TAG,notification_body);
         String noti_clcik=remoteMessage.getNotification().getClickAction();
         Intent click_intent=new Intent(noti_clcik);
+        click_intent.putExtra("action","request_friend");
         click_intent.putExtra("friend_id",user_id);
         click_intent.putExtra("nickName",nickName);
         click_intent.putExtra("email",email);

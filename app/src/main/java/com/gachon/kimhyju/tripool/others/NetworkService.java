@@ -26,6 +26,8 @@ public interface NetworkService {
 
     @POST("/Friend/{user_id}/{friend_id}")
     Call<User> add_friend(@Path("user_id") int user_id, @Path("friend_id") int friend_id);
+    @GET("/Friend/{user_id}")
+    Call<List<User>> find_friend(@Path("user_id") int user_id);
 
     @POST("/Trip")
     Call<Trip> create_trip(@Body Trip trip);

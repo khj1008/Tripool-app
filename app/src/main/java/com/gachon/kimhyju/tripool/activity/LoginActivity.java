@@ -54,6 +54,7 @@ public class LoginActivity extends AppCompatActivity {
 
         }else {
             final Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("action","launch");
             startActivity(intent);
             finish();
         }

@@ -258,7 +258,7 @@ public class FriendfindActivity extends Activity implements View.OnClickListener
                     JSONObject notification = new JSONObject();
                     notification.put("title","친구요청");
                     notification.put("body",nickName+"님으로부터 친구요청이 왔습니다!");
-                    notification.put("click_action","android.intent.action.MAIN");
+                    notification.put("click_action","FRIEND_REQUEST");
 
 
                     JSONObject data=new JSONObject();

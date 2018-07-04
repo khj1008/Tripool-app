@@ -115,12 +115,12 @@ public class page_Menu extends Fragment implements View.OnClickListener {
                 break;
             case R.id.triplistButton:
                 Intent tripintent=new Intent(mcontext,TriplistActivity.class);
-                tripintent.putExtra("flag","create");
                 tripintent.putExtra("user_id",user_id);
                 startActivity(tripintent);
                 break;
             case R.id.friendlistButton:
                 Intent friendintent=new Intent(mcontext,FriendlistActivity.class);
+                friendintent.putExtra("user_id",user_id);
                 startActivity(friendintent);
                 break;
         }
