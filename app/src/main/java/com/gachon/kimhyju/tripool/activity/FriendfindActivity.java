@@ -35,6 +35,7 @@ import org.json.JSONObject;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -60,7 +61,7 @@ public class FriendfindActivity extends Activity implements View.OnClickListener
     Gender gender;
     String email;
     String token;
-
+    List<User> friendList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,8 +87,6 @@ public class FriendfindActivity extends Activity implements View.OnClickListener
         findFriend_ok.setOnClickListener(this);
         findFriend_cancel.setOnClickListener(this);
         flag=false;
-
-        //queue= Volley.newRequestQueue(getApplicationContext());
     }
 
     @Override
@@ -95,6 +94,7 @@ public class FriendfindActivity extends Activity implements View.OnClickListener
         switch (v.getId()){
             case R.id.findFriend_ok:
                 if(flag==false){
+
                     find_Friend();
                 }else{
                     request_Friend();
@@ -144,84 +144,6 @@ public class FriendfindActivity extends Activity implements View.OnClickListener
             }
         });
     }
-
-    /*
-    public void requestFriend(String token){
-        JSONObject requestData=new JSONObject();
-        try{
-            JSONObject notification = new JSONObject();
-            notification.put("title","친구요청");
-            notification.put("body",nickName+"님으로부터 친구요청이 왔습니다!");
-
-
-
-            JSONObject data=new JSONObject();
-
-
-            requestData.put("token",friend.getToken());
-            requestData.put("notification",notification);
-            requestData.put("data",data);
-
-
-
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-
-        sendData(requestData, new page_Home.SendResponseListener() {
-            @Override
-            public void onRequestStarted() {Log.d("MyMS","onRequestCompleted() called");}
-            @Override
-            public void onRequestCompleted() {Log.d("MyMS","onRequestStarted() called");}
-            @Override
-            public void onRequestWithError(VolleyError error) {Log.d("MyMS","onRequestWithError() called");}
-        });
-    }
-    public interface SendResponseListener{
-        public void onRequestStarted();
-        public void onRequestCompleted();
-        public void onRequestWithError(VolleyError error);
-    }
-    public void sendData(JSONObject requestData, final page_Home.SendResponseListener listener){
-        JsonObjectRequest request = new JsonObjectRequest(
-                Request.Method.POST,
-                "https://fcm.googleapis.com/fcm/send",
-                requestData,
-                new com.android.volley.Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        listener.onRequestCompleted();
-                    }
-                }, new com.android.volley.Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                listener.onRequestWithError(error);
-            }
-        }
-        ){
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String,String> params = new HashMap<String, String>();
-                return params;
-            }
-
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> headers=new HashMap<String, String>();
-                headers.put("Authorization",getText(R.string.server_key).toString());
-                return headers;
-            }
-            @Override
-            public String getBodyContentType(){
-                return "application/json";
-            }
-        };
-        request.setShouldCache(false);
-        listener.onRequestStarted();
-        queue.add(request);
-    }
-    */
 
     private void requestMe(){
         UserManagement.getInstance().me(new MeV2ResponseCallback() {

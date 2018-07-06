@@ -10,17 +10,21 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gachon.kimhyju.tripool.R;
 import com.gachon.kimhyju.tripool.object.Trip;
+import com.gachon.kimhyju.tripool.object.User;
 import com.gachon.kimhyju.tripool.others.ApplicationController;
+import com.gachon.kimhyju.tripool.others.FriendAdapter_checkable;
 import com.gachon.kimhyju.tripool.others.NetworkService;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -38,6 +42,7 @@ public class TripcreateActivity extends Activity implements View.OnClickListener
     Button trip_end_button;
     Button trip_create_button;
     Button trip_cancel_button;
+    ListView friendlist;
     Calendar today;
     Calendar start_date;
     Calendar end_date;
@@ -45,6 +50,14 @@ public class TripcreateActivity extends Activity implements View.OnClickListener
     DatePickerDialog enddate_picker_dialog;
     DatePickerDialog.OnDateSetListener startdate_picker_listener;
     DatePickerDialog.OnDateSetListener enddate_picker_listener;
+    FriendAdapter_checkable friendAdapter_checkable;
+    int friend_id;
+    String friend_name;
+    String friend_profile_image;
+    String friend_image;
+    String friend_gender;
+    String friend_email;
+    String friend_token;
 
     SimpleDateFormat sdf;
     SimpleDateFormat sdf_id;
@@ -77,6 +90,8 @@ public class TripcreateActivity extends Activity implements View.OnClickListener
         trip_end_button=(Button)findViewById(R.id.tripend_button);
         trip_end_button.setOnClickListener(this);
         trip_subject_edit=findViewById(R.id.trip_subject);
+        friendlist=findViewById(R.id.tripcreate_friendlist);
+        friendAdapter_checkable=new FriendAdapter_checkable();
 
         intent=getIntent();
         user_id=intent.getIntExtra("user_id",0);
@@ -127,6 +142,8 @@ public class TripcreateActivity extends Activity implements View.OnClickListener
         trip_cancel_button.setOnClickListener(this);
         trip_start_date.setText(sdf.format(today.getTime()));
         trip_end_date.setText(sdf.format(today.getTime()));
+
+        getFriend(user_id);
 
 
     }
@@ -220,5 +237,39 @@ public class TripcreateActivity extends Activity implements View.OnClickListener
             trip_end_date.setText(intent.getStringExtra("end_date"));
             start_date_sql=intent.getStringExtra("start_date");
             end_date_sql=intent.getStringExtra("end_date");
+    }
+
+
+    public void getFriend(int user_id){
+        friendAdapter_checkable.clear();
+        Call<List<User>> getfriend=networkService.find_friend(user_id);
+        getfriend.enqueue(new Callback<List<User>>(){
+            @Override
+            public void onResponse(Call<List<User>> user, Response<List<User>> response){
+                if(response.isSuccessful()){
+                    List<User> friendList=response.body();
+                    for(User frienditem : friendList){
+                        friend_name=frienditem.getNickname();
+                        friend_image=frienditem.getThumbnail_image();
+                        friend_email=frienditem.getEmail();
+                        friend_gender=frienditem.getGender();
+                        friend_profile_image=frienditem.getProfile_image();
+                        friend_token=frienditem.getToken();
+                        friend_id=frienditem.getUser_id();
+                        friendAdapter_checkable.addItem(frienditem);
+                    }
+                    friendAdapter_checkable.notifyDataSetChanged();
+                    friendlist.setAdapter(friendAdapter_checkable);
+
+                }else{
+                    int statusCode=response.code();
+                    Log.d("MyTag(onResponse)","응답코드 : "+statusCode);
+                }
+            }
+            @Override
+            public void onFailure(Call<List<User>> user, Throwable t){
+                Log.d("MyTag(onFailure)","응답코드 : "+t.getMessage());
+            }
+        });
     }
 }

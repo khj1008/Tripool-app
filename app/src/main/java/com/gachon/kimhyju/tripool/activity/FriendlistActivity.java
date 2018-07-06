@@ -64,6 +64,7 @@ public class FriendlistActivity extends AppCompatActivity implements AdapterView
         user_id=intent.getIntExtra("user_id",0);
         friendAdapter=new FriendAdapter(getApplicationContext());
         listView.setOnItemLongClickListener(this);
+
     }
 
     public boolean onOptionsItemSelected(android.view.MenuItem item) {
@@ -117,7 +118,7 @@ public class FriendlistActivity extends AppCompatActivity implements AdapterView
         User user=(User)friendAdapter.getItem(position);
         friend_id=user.getUser_id();
         PopupMenu popup=new PopupMenu(FriendlistActivity.this,view);
-        getMenuInflater().inflate(R.menu.popupmenu,popup.getMenu());
+        getMenuInflater().inflate(R.menu.popupmenu_friendlist,popup.getMenu());
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
