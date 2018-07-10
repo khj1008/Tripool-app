@@ -164,7 +164,7 @@ public class TripcreateActivity extends Activity implements View.OnClickListener
         trip_end_date.setText(sdf.format(today.getTime()));
 
         getFriend(user_id);
-
+        friendlist.setAdapter(friendAdapter_checkable);
 
     }
 
@@ -286,7 +286,7 @@ public class TripcreateActivity extends Activity implements View.OnClickListener
 
                     }
                     friendAdapter_checkable.notifyDataSetChanged();
-                    friendlist.setAdapter(friendAdapter_checkable);
+
 
                 }else{
                     int statusCode=response.code();

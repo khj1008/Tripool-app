@@ -11,6 +11,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.MultiTransformation;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+import com.bumptech.glide.request.RequestOptions;
 import com.gachon.kimhyju.tripool.R;
 import com.gachon.kimhyju.tripool.object.Trip;
 import com.gachon.kimhyju.tripool.others.ApplicationController;
@@ -77,8 +82,11 @@ public class TripacceptActivity extends Activity implements View.OnClickListener
         friend_nickName=intent.getStringExtra("nickName");
         friend_thumbnail_image=intent.getStringExtra("thumbnail_image");
 
-
-
+        MultiTransformation mul=new MultiTransformation(new CircleCrop(),new CenterCrop());
+        Glide.with(getApplicationContext()).load(friend_thumbnail_image).apply(RequestOptions.bitmapTransform(mul)).into(friend_image_imageView);
+        friend_nickName_textView.setText(friend_nickName);
+        trip_subject_textView.setText(trip_subject);
+        trip_date_textView.setText(trip_date);
     }
 
     public void onClick(View v){

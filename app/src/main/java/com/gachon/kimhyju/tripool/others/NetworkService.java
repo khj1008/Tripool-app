@@ -45,6 +45,6 @@ public interface NetworkService {
     Call<List<Trip>> get_trip(@Path("user_id") int user_id);
 
     //Trip_join
-    @POST("/Trip_join")
+    @POST("/Trip_join/{trip_id}/{user_id}")
     Call<Trip> join_trip(@Path("trip_id")String trip_id, @Path("user_id") int user_id);
 }
