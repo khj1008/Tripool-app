@@ -14,6 +14,7 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public interface NetworkService {
+    //User
     @POST("/User")
     Call<User> post_user(@Body User user);
     @DELETE("/User/{user_id}")
@@ -21,9 +22,11 @@ public interface NetworkService {
     @GET("/User/{email}")
     Call<User> find_User(@Path("email") String email);
 
+    //Token
     @PUT("/Token")
     Call<User> update_token(@Body User user);
 
+    //Friend
     @POST("/Friend/{user_id}/{friend_id}")
     Call<User> add_friend(@Path("user_id") int user_id, @Path("friend_id") int friend_id);
     @GET("/Friend/{user_id}")
@@ -31,6 +34,7 @@ public interface NetworkService {
     @DELETE("/Friend/{user_id}/{friend_id}")
     Call<User> delete_friend(@Path("user_id") int user_id, @Path("friend_id") int friend_id);
 
+    //Trip
     @POST("/Trip")
     Call<Trip> create_trip(@Body Trip trip);
     @PUT("/Trip")
@@ -39,4 +43,8 @@ public interface NetworkService {
     Call<Trip> delete_trip(@Path("trip_id") String trip_id, @Path("user_id") int user_id);
     @GET("/Trip/{user_id}")
     Call<List<Trip>> get_trip(@Path("user_id") int user_id);
+
+    //Trip_join
+    @POST("/Trip_join")
+    Call<Trip> join_trip(@Path("trip_id")String trip_id, @Path("user_id") int user_id);
 }

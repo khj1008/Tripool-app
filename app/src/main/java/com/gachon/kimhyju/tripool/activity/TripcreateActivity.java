@@ -314,7 +314,7 @@ public class TripcreateActivity extends Activity implements View.OnClickListener
                     notification.put("click_action","TRIP_INVITE");
                     //메시지에 포함될 내용
                     JSONObject data=new JSONObject();
-                    data.put("type","1");
+                    data.put("trip_id",trip_id);
                     data.put("date",start_date_sql+" ~ "+end_date_sql);
                     data.put("nickName",nickName);
                     data.put("thumbnail_image",thumbnail_image);
