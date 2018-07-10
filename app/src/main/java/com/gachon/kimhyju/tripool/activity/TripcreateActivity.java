@@ -20,7 +20,20 @@ import com.gachon.kimhyju.tripool.object.User;
 import com.gachon.kimhyju.tripool.others.ApplicationController;
 import com.gachon.kimhyju.tripool.others.FriendAdapter_checkable;
 import com.gachon.kimhyju.tripool.others.NetworkService;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.kakao.network.ErrorResult;
+import com.kakao.usermgmt.UserManagement;
+import com.kakao.usermgmt.callback.MeV2ResponseCallback;
+import com.kakao.usermgmt.response.MeV2Response;
+import com.kakao.usermgmt.response.model.Gender;
+import com.kakao.util.helper.log.Logger;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -58,6 +71,8 @@ public class TripcreateActivity extends Activity implements View.OnClickListener
     String friend_gender;
     String friend_email;
     String friend_token;
+    JSONArray tokenArray;
+    List<User> friends;
 
     SimpleDateFormat sdf;
     SimpleDateFormat sdf_id;
@@ -69,6 +84,12 @@ public class TripcreateActivity extends Activity implements View.OnClickListener
     private NetworkService networkService;
 
     int user_id;
+    String nickName;
+    String profile_image;
+    String thumbnail_image;
+    Gender gender;
+    String email;
+    String token;
     Intent intent;
 
     @Override
@@ -80,6 +101,8 @@ public class TripcreateActivity extends Activity implements View.OnClickListener
         ApplicationController application=ApplicationController.getInstance();
         application.buildNetworkService("210.102.181.158",62005);
         networkService= ApplicationController.getInstance().getNetworkService();
+        requestMe();
+
         trip_create_button=(Button)findViewById(R.id.trip_create_button);
         trip_cancel_button=(Button)findViewById(R.id.trip_cancel_button);
         trip_start_date=(TextView)findViewById(R.id.trip_start_text);
@@ -92,6 +115,7 @@ public class TripcreateActivity extends Activity implements View.OnClickListener
         trip_subject_edit=findViewById(R.id.trip_subject);
         friendlist=findViewById(R.id.tripcreate_friendlist);
         friendAdapter_checkable=new FriendAdapter_checkable();
+        tokenArray=new JSONArray();
 
         intent=getIntent();
         user_id=intent.getIntExtra("user_id",0);
@@ -125,10 +149,6 @@ public class TripcreateActivity extends Activity implements View.OnClickListener
                 end_date.set(year,month,date);
                 trip_end_date.setText(year+"-"+(month+1)+"-"+date);
                 end_date_sql = sdf.format(end_date.getTime());
-
-
-
-
             }
         };
         startdate_picker_dialog=new DatePickerDialog(TripcreateActivity.this,startdate_picker_listener, today.get(Calendar.YEAR),today.get(Calendar.MONTH),today.get(Calendar.DAY_OF_MONTH));
@@ -168,6 +188,12 @@ public class TripcreateActivity extends Activity implements View.OnClickListener
                     trip_subject = trip_subject_edit.getText().toString();
                     trip_id = sdf_id.format(today.getTime()) + String.valueOf(user_id);
                     createTrip(trip_id, trip_subject, start_date_sql, end_date_sql, create_date_sql, user_id);
+                    for(int i=0; i<friendAdapter_checkable.getCount(); i++){
+                        if(friendlist.getCheckedItemPositions().get(i)){
+                            tokenArray.put(friends.get(i).getToken());
+                        }
+                    }
+                    invite_Trip();
                     finish();
                 }
             case R.id.trip_cancel_button:
@@ -247,8 +273,8 @@ public class TripcreateActivity extends Activity implements View.OnClickListener
             @Override
             public void onResponse(Call<List<User>> user, Response<List<User>> response){
                 if(response.isSuccessful()){
-                    List<User> friendList=response.body();
-                    for(User frienditem : friendList){
+                    friends=response.body();
+                    for(User frienditem : friends){
                         friend_name=frienditem.getNickname();
                         friend_image=frienditem.getThumbnail_image();
                         friend_email=frienditem.getEmail();
@@ -257,6 +283,7 @@ public class TripcreateActivity extends Activity implements View.OnClickListener
                         friend_token=frienditem.getToken();
                         friend_id=frienditem.getUser_id();
                         friendAdapter_checkable.addItem(frienditem);
+
                     }
                     friendAdapter_checkable.notifyDataSetChanged();
                     friendlist.setAdapter(friendAdapter_checkable);
@@ -269,6 +296,76 @@ public class TripcreateActivity extends Activity implements View.OnClickListener
             @Override
             public void onFailure(Call<List<User>> user, Throwable t){
                 Log.d("MyTag(onFailure)","응답코드 : "+t.getMessage());
+            }
+        });
+    }
+
+
+    public void invite_Trip(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    // FMC 메시지 생성 start
+                    //notification 내용 작성
+                    JSONObject notification = new JSONObject();
+                    notification.put("title",trip_subject);
+                    notification.put("body","여행에 초대되었습니다!");
+                    notification.put("click_action","TRIP_INVITE");
+                    //메시지에 포함될 내용
+                    JSONObject data=new JSONObject();
+                    data.put("type","1");
+                    data.put("date",start_date_sql+" ~ "+end_date_sql);
+                    data.put("nickName",nickName);
+                    data.put("thumbnail_image",thumbnail_image);
+                    //작성된 내용을 모두 삽입
+                    JSONObject requestData=new JSONObject();
+                    requestData.put("registration_ids",tokenArray);
+                    requestData.put("notification",notification);
+                    requestData.put("data",data);
+                    // FMC 메시지 생성 end
+
+                    URL Url = new URL("https://fcm.googleapis.com/fcm/send");
+                    HttpURLConnection conn = (HttpURLConnection) Url.openConnection();
+                    conn.setDoOutput(true);
+                    conn.addRequestProperty("Authorization", "key=" + getString(R.string.server_key));
+                    conn.setRequestProperty("Accept", "application/json");
+                    conn.setRequestProperty("Content-type", "application/json");
+                    conn.setRequestMethod("POST");
+                    conn.connect();
+
+                    OutputStream os = conn.getOutputStream();
+                    os.write(requestData.toString().getBytes("UTF-8"));
+                    os.close();
+                    conn.getResponseCode();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    //내 정보 받아오기
+    private void requestMe(){
+        UserManagement.getInstance().me(new MeV2ResponseCallback() {
+            @Override
+            public void onFailure(ErrorResult errorResult) {
+                String message = "failed to get user info. msg=" + errorResult;
+                Logger.d(message);
+            }
+            @Override
+            public void onSessionClosed(ErrorResult errorResult) {
+                Log.d("error", "Session Closed Error is " + errorResult.toString());
+            }
+            @Override
+            public void onSuccess(MeV2Response result) {
+                user_id=(int)result.getId();
+                nickName=result.getNickname();
+                profile_image=result.getProfileImagePath();
+                thumbnail_image=result.getThumbnailImagePath();
+                gender=result.getKakaoAccount().getGender();
+                email=result.getKakaoAccount().getEmail();
+                token= FirebaseInstanceId.getInstance().getToken();
             }
         });
     }

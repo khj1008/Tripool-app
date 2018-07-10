@@ -35,7 +35,6 @@ import org.json.JSONObject;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -61,7 +60,7 @@ public class FriendfindActivity extends Activity implements View.OnClickListener
     Gender gender;
     String email;
     String token;
-    List<User> friendList;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
