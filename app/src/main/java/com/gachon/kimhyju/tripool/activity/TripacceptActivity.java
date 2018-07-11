@@ -82,11 +82,12 @@ public class TripacceptActivity extends Activity implements View.OnClickListener
         friend_nickName=intent.getStringExtra("nickName");
         friend_thumbnail_image=intent.getStringExtra("thumbnail_image");
 
+        trip_subject_textView.setText(trip_subject);
+        trip_date_textView.setText(trip_date);
         MultiTransformation mul=new MultiTransformation(new CircleCrop(),new CenterCrop());
         Glide.with(getApplicationContext()).load(friend_thumbnail_image).apply(RequestOptions.bitmapTransform(mul)).into(friend_image_imageView);
         friend_nickName_textView.setText(friend_nickName);
-        trip_subject_textView.setText(trip_subject);
-        trip_date_textView.setText(trip_date);
+
     }
 
     public void onClick(View v){

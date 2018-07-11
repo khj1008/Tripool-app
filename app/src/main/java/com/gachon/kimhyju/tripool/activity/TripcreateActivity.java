@@ -132,6 +132,8 @@ public class TripcreateActivity extends Activity implements View.OnClickListener
         end_date=new GregorianCalendar();
         sdf = new SimpleDateFormat("yyyy-MM-dd");
         sdf_id=new SimpleDateFormat("yyyyMMddHHmmss");
+        start_date_sql = sdf.format(today.getTime());
+        end_date_sql = sdf.format(today.getTime());
 
 
         startdate_picker_listener=new DatePickerDialog.OnDateSetListener() {
@@ -164,7 +166,7 @@ public class TripcreateActivity extends Activity implements View.OnClickListener
         trip_end_date.setText(sdf.format(today.getTime()));
 
         getFriend(user_id);
-        friendlist.setAdapter(friendAdapter_checkable);
+        //friendlist.setAdapter(friendAdapter_checkable);
 
     }
 
@@ -286,7 +288,7 @@ public class TripcreateActivity extends Activity implements View.OnClickListener
 
                     }
                     friendAdapter_checkable.notifyDataSetChanged();
-
+                    friendlist.setAdapter(friendAdapter_checkable);
 
                 }else{
                     int statusCode=response.code();

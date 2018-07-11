@@ -3,8 +3,6 @@ package com.gachon.kimhyju.tripool.others;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.widget.CheckBox;
-import android.widget.Checkable;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -16,7 +14,7 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
 import com.gachon.kimhyju.tripool.R;
 
-public class FriendlistView_checkable extends LinearLayout implements Checkable {
+public class FriendlistView_checkable extends LinearLayout {
 
     MultiTransformation mul;
     ImageView friendlist_image_check;
@@ -34,31 +32,11 @@ public class FriendlistView_checkable extends LinearLayout implements Checkable 
         init(context);
     }
 
-    @Override
-    public boolean isChecked(){
-        CheckBox cb=findViewById(R.id.friend_checkbox);
-        return cb.isChecked();
-    }
 
-    @Override
-    public void toggle() {
-        CheckBox cb = findViewById(R.id.friend_checkbox) ;
-        setChecked(cb.isChecked() ? false : true) ;
-    }
-
-    @Override
-    public void setChecked(boolean checked) {
-        CheckBox cb = findViewById(R.id.friend_checkbox) ;
-        if (cb.isChecked() != checked) {
-            cb.setChecked(checked) ;
-        }
-
-        // CheckBox 가 아닌 View의 상태 변경.
-    }
 
     public void init(Context context){
         LayoutInflater inflater=(LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.friend_item,this,true);
+        inflater.inflate(R.layout.friend_item_checkable,this,true);
         friendlist_name_check = (TextView)findViewById(R.id.friendlist_name_check);
         friendlist_image_check = (ImageView)findViewById(R.id.friendlist_image_check);
         mcontext=context;

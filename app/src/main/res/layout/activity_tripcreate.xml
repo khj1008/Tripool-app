@@ -37,7 +37,8 @@
             android:layout_weight="1"
             android:ems="10"
             android:hint="여행 제목을 지어주세요."
-            android:inputType="textPersonName" />
+            android:inputType="textPersonName"
+            android:textColor="@android:color/black" />
     </LinearLayout>
 
     <LinearLayout

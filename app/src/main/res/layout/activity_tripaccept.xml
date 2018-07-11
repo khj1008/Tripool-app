@@ -43,7 +43,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="3"
             android:gravity="center"
-            android:text="여행 제목" />
+            android:text="여행 제목"
+            android:textColor="@android:color/black" />
 
     </LinearLayout>
 
@@ -68,7 +69,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="3"
             android:gravity="center"
-            android:text="여행 날짜" />
+            android:text="여행 날짜"
+            android:textColor="@android:color/black" />
 
     </LinearLayout>
 
@@ -100,7 +102,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="3"
-            android:text="이름" />
+            android:text="이름"
+            android:textColor="@android:color/black" />
 
     </LinearLayout>
 
