@@ -18,10 +18,12 @@
         android:id="@+id/tabs"
         android:layout_width="match_parent"
         android:layout_height="60dp"
+        app:ntb_badge_bg_color="@android:color/holo_red_dark"
         app:ntb_badge_gravity="top"
         app:ntb_badge_position="right"
+        app:ntb_badge_title_color="@android:color/background_light"
         app:ntb_badged="true"
         app:ntb_scaled="true"
-        app:ntb_tinted="true"
-        app:ntb_swiped="true" />
+        app:ntb_swiped="true"
+        app:ntb_tinted="true" />
 </LinearLayout>

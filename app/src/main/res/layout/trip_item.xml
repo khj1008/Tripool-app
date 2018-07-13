@@ -15,8 +15,8 @@
 
         <TextView
             android:id="@+id/triplist_subject"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:gravity="center_vertical"
             android:text="TextView"
@@ -33,7 +33,7 @@
 
         <TextView
             android:id="@+id/triplist_country"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_weight="1"
@@ -41,7 +41,7 @@
 
         <TextView
             android:id="@+id/triplist_period"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="TextView" />

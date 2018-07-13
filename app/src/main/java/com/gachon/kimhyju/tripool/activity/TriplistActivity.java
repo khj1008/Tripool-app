@@ -2,19 +2,21 @@ package com.gachon.kimhyju.tripool.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.PopupMenu;
 import android.util.Log;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
+import android.util.TypedValue;
+import android.view.Menu;
 import android.widget.Toast;
 
+import com.baoyz.swipemenulistview.SwipeMenu;
+import com.baoyz.swipemenulistview.SwipeMenuCreator;
+import com.baoyz.swipemenulistview.SwipeMenuItem;
+import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.gachon.kimhyju.tripool.R;
 import com.gachon.kimhyju.tripool.object.Trip;
 import com.gachon.kimhyju.tripool.others.ApplicationController;
@@ -32,15 +34,16 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class TriplistActivity extends AppCompatActivity implements AdapterView.OnItemLongClickListener {
+public class TriplistActivity extends AppCompatActivity implements SwipeMenuListView.OnMenuItemClickListener {
     int user_id, creator_id;
     String trip_id;
     String date_s, date_e;
     String trip_subject;
     Date date;
     Calendar cal;
+    SwipeMenuCreator sc;
 
-    ListView listView;
+    SwipeMenuListView listView;
     TripAdapter tripAdapter;
     private NetworkService networkService;
     SimpleDateFormat sdf1;
@@ -54,38 +57,81 @@ public class TriplistActivity extends AppCompatActivity implements AdapterView.O
         application.buildNetworkService("210.102.181.158",62005);
         networkService= ApplicationController.getInstance().getNetworkService();
 
+        sc = new SwipeMenuCreator() {
+
+            @Override
+            public void create(SwipeMenu menu) {
+                // create "open" item
+                SwipeMenuItem modifyItem = new SwipeMenuItem(
+                        getApplicationContext());
+                // set item background
+                modifyItem.setBackground(new ColorDrawable(Color.rgb(0xC9, 0xC9,
+                        0xCE)));
+                // set item width
+                modifyItem.setWidth(dp2px(90));
+                modifyItem.setTitle("수정");
+                modifyItem.setTitleSize(18);
+                modifyItem.setTitleColor(Color.WHITE);
+                menu.addMenuItem(modifyItem);
+
+                // create "delete" item
+                SwipeMenuItem deleteItem = new SwipeMenuItem(
+                        getApplicationContext());
+                // set item background
+                deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9,
+                        0x3F, 0x25)));
+                // set item width
+                deleteItem.setWidth(dp2px(90));
+                // set a icon
+                deleteItem.setTitle("삭제");
+                deleteItem.setTitleSize(18);
+                deleteItem.setTitleColor(Color.WHITE);
+                // add to menu
+                menu.addMenuItem(deleteItem);
+            }
+        };
+
         ActionBar actionBar=getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.addTripButton);
+        //FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.addTripButton);
         Intent intent= getIntent();
         user_id=intent.getIntExtra("user_id",0);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent=new Intent(TriplistActivity.this,TripcreateActivity.class);
-                intent.putExtra("user_id",user_id);
-                intent.putExtra("flag","create");
-                startActivity(intent);
-            }
-        });
         sdf1=new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         sdf2=new SimpleDateFormat("yyyy-MM-dd");
         cal=new GregorianCalendar();
         listView=findViewById(R.id.triplist_view);
-        listView.setOnItemLongClickListener(this);
+        listView.setOnMenuItemClickListener(this);
         tripAdapter=new TripAdapter(getApplicationContext());
 
+
     }
+
+
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.action_add,menu);
+        return true;
+    }
+
 
     public boolean onOptionsItemSelected(android.view.MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
                 return true;
+            case R.id.action_add:
+                Intent intent=new Intent(TriplistActivity.this,TripcreateActivity.class);
+                intent.putExtra("user_id",user_id);
+                intent.putExtra("flag","create");
+                startActivity(intent);
+                break;
         }
         return super.onOptionsItemSelected(item);
     };
+
+
+
+
 
 
 
@@ -96,6 +142,35 @@ public class TriplistActivity extends AppCompatActivity implements AdapterView.O
         getTrip(user_id);
     }
 
+    @Override
+    public boolean onMenuItemClick(int position, SwipeMenu menu, int index){
+        Trip trip=(Trip)tripAdapter.getItem(position);
+        trip_id=trip.getTrip_id();
+        creator_id=trip.getCreator_id();
+        trip_subject=trip.getSubject();
+        date_s=trip.getStart_date();
+        date_e=trip.getEnd_date();
+            switch (index){
+                case 0:
+                    if(user_id==creator_id) {
+                        Intent intent = new Intent(TriplistActivity.this, TripcreateActivity.class);
+                        intent.putExtra("flag", "modify");
+                        intent.putExtra("trip_id",trip_id);
+                        intent.putExtra("subject",trip_subject);
+                        intent.putExtra("start_date",date_s);
+                        intent.putExtra("end_date",date_e);
+                        startActivity(intent);
+                    }else{
+                        Toast.makeText(getApplicationContext(),"여행 생성자만 여행을 수정할 수 있습니다.",Toast.LENGTH_LONG).show();
+                    }
+                    break;
+                case 1:
+                    showDialog();
+                    break;
+            }
+            return false;
+    }
+    /*
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView,View view,int position,long id){
     Trip trip=(Trip)tripAdapter.getItem(position);
@@ -135,6 +210,7 @@ public class TriplistActivity extends AppCompatActivity implements AdapterView.O
 
     return true;
     }
+    */
 
 
     public void deleteTrip(String trip_id,int user_id){
@@ -188,6 +264,7 @@ public class TriplistActivity extends AppCompatActivity implements AdapterView.O
                     }
                     tripAdapter.notifyDataSetChanged();
                     listView.setAdapter(tripAdapter);
+                    listView.setMenuCreator(sc);
 
                 }else{
                     int statusCode=response.code();
@@ -220,6 +297,11 @@ public class TriplistActivity extends AppCompatActivity implements AdapterView.O
         });
         AlertDialog dialog=builder.create();
         dialog.show();
+    }
+
+    private int dp2px(int dp) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
+                getResources().getDisplayMetrics());
     }
 
 }

@@ -2,18 +2,24 @@ package com.gachon.kimhyju.tripool.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ListView;
 
+import com.baoyz.swipemenulistview.SwipeMenu;
+import com.baoyz.swipemenulistview.SwipeMenuCreator;
+import com.baoyz.swipemenulistview.SwipeMenuItem;
+import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.gachon.kimhyju.tripool.R;
 import com.gachon.kimhyju.tripool.object.User;
 import com.gachon.kimhyju.tripool.others.ApplicationController;
@@ -37,7 +43,8 @@ public class FriendlistActivity extends AppCompatActivity implements AdapterView
     String friend_gender;
     String friend_email;
     String friend_token;
-    ListView listView;
+    SwipeMenuListView listView;
+    SwipeMenuCreator sc;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,19 +54,31 @@ public class FriendlistActivity extends AppCompatActivity implements AdapterView
         application.buildNetworkService("210.102.181.158",62005);
         networkService= ApplicationController.getInstance().getNetworkService();
 
+        sc = new SwipeMenuCreator() {
+
+            @Override
+            public void create(SwipeMenu menu) {
+                // create "delete" item
+                SwipeMenuItem deleteItem = new SwipeMenuItem(
+                        getApplicationContext());
+                // set item background
+                deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9,
+                        0x3F, 0x25)));
+                // set item width
+                deleteItem.setWidth(dp2px(90));
+                // set a icon
+                deleteItem.setTitle("삭제");
+                deleteItem.setTitleSize(18);
+                deleteItem.setTitleColor(Color.WHITE);
+                // add to menu
+                menu.addMenuItem(deleteItem);
+            }
+        };
+
         listView=findViewById(R.id.friendlist_view);
         ActionBar actionBar=getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.addFriendButton);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent=new Intent(FriendlistActivity.this,FriendfindActivity.class);
-                startActivity(intent);
-            }
-        });
-
         Intent intent= getIntent();
         user_id=intent.getIntExtra("user_id",0);
         friendAdapter=new FriendAdapter(getApplicationContext());
@@ -67,11 +86,21 @@ public class FriendlistActivity extends AppCompatActivity implements AdapterView
 
     }
 
+
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.action_add,menu);
+        return true;
+    }
+
     public boolean onOptionsItemSelected(android.view.MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
                 return true;
+            case R.id.action_add:
+                Intent intent=new Intent(FriendlistActivity.this,FriendfindActivity.class);
+                startActivity(intent);
+                break;
         }
         return super.onOptionsItemSelected(item);
 
@@ -99,6 +128,7 @@ public class FriendlistActivity extends AppCompatActivity implements AdapterView
                     }
                     friendAdapter.notifyDataSetChanged();
                     listView.setAdapter(friendAdapter);
+                    listView.setMenuCreator(sc);
 
                 }else{
                     int statusCode=response.code();
@@ -179,5 +209,10 @@ public class FriendlistActivity extends AppCompatActivity implements AdapterView
     public void onResume(){
         super.onResume();
         getFriend(user_id);
+    }
+
+    private int dp2px(int dp) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
+                getResources().getDisplayMetrics());
     }
 }

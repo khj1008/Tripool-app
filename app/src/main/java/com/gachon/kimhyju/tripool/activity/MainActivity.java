@@ -190,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements page_Home.OnFragm
                         .build()
         );
         mTab.setModels(models);
-        mTab.setViewPager(viewPager, 2);
+        mTab.setViewPager(viewPager, 0);
         mTab.setBehaviorEnabled(true);
         mTab.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
