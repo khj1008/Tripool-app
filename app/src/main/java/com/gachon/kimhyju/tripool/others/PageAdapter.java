@@ -78,28 +78,6 @@ public class PageAdapter extends FragmentPagerAdapter {
     @Override
     public CharSequence getPageTitle(int position){
         return null;
-        /*SpannableStringBuilder sb;
-        ImageSpan span;
-        switch(position){
-            case 0:
-                myDrawable = context.getResources().getDrawable(R.drawable.ic_home);
-                sb = new SpannableStringBuilder("  Home"); // space added before text for convenience
-                myDrawable.setBounds(0, 0, myDrawable.getIntrinsicWidth(), myDrawable.getIntrinsicHeight());
-                span = new ImageSpan(myDrawable);
-                sb.setSpan(span, 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                return sb;
-            case 1:
-                return "여행목록";
-            case 2:
-                return "친구목록";
-            case 3:
-                return "알림목록";
-            case 4:
-                return "환경설정";
-            default:
-                return null;
-        }*/
-
     }
     private void requestMe(){
         UserManagement.getInstance().me(new MeV2ResponseCallback() {
