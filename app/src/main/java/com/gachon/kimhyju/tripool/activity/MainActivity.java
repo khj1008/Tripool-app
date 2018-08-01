@@ -1,5 +1,7 @@
 package com.gachon.kimhyju.tripool.activity;
 
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -7,6 +9,10 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.gachon.kimhyju.tripool.R;
@@ -26,6 +32,9 @@ import com.kakao.usermgmt.callback.MeV2ResponseCallback;
 import com.kakao.usermgmt.response.MeV2Response;
 import com.kakao.usermgmt.response.model.Gender;
 import com.kakao.util.helper.log.Logger;
+import com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton;
+import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
+import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
 
 import java.util.ArrayList;
 
@@ -39,6 +48,8 @@ public class MainActivity extends AppCompatActivity implements page_Home.OnFragm
     private final long FINISH_INTERVAL_TIME = 2000;
     private long backPressedTime = 0;
     private NetworkService networkService;
+    private com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton addButton;
+    FloatingActionMenu actionMenu;
     int user_id;
     String nickName;
     String profile_image;
@@ -46,7 +57,6 @@ public class MainActivity extends AppCompatActivity implements page_Home.OnFragm
     Gender gender;
     String email;
     String token;
-    String action;
 
 
     @Override
@@ -60,6 +70,44 @@ public class MainActivity extends AppCompatActivity implements page_Home.OnFragm
         networkService= ApplicationController.getInstance().getNetworkService();
         requestMe();
         updateToken(user_id,token);
+        final ImageView iconview=new ImageView(this);
+        iconview.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_new_light));
+        addButton=new FloatingActionButton.Builder(this).setContentView(iconview).build();
+        SubActionButton.Builder subBuilder=new SubActionButton.Builder(this);
+        ImageView listIcon=new ImageView(this);
+        ImageView coinIcon=new ImageView(this);
+        ImageView mapIcon=new ImageView(this);
+        ImageView memoIcon=new ImageView(this);
+        listIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_check));
+        coinIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_coin));
+        mapIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_map));
+        memoIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_memo));
+        actionMenu=new FloatingActionMenu.Builder(this)
+                .addSubActionView(subBuilder.setContentView(listIcon).build())
+                .addSubActionView(subBuilder.setContentView(coinIcon).build())
+                .addSubActionView(subBuilder.setContentView(mapIcon).build())
+                .addSubActionView(subBuilder.setContentView(memoIcon).build())
+                .attachTo(addButton).build();
+        actionMenu.setStateChangeListener(new FloatingActionMenu.MenuStateChangeListener() {
+            @Override
+            public void onMenuOpened(FloatingActionMenu menu) {
+                // Rotate the icon of rightLowerButton 45 degrees clockwise
+                iconview.setRotation(0);
+                PropertyValuesHolder pvhR = PropertyValuesHolder.ofFloat(View.ROTATION, 45);
+                ObjectAnimator animation = ObjectAnimator.ofPropertyValuesHolder(iconview, pvhR);
+                animation.start();
+            }
+
+            @Override
+            public void onMenuClosed(FloatingActionMenu menu) {
+                // Rotate the icon of rightLowerButton 45 degrees counter-clockwise
+                iconview.setRotation(45);
+                PropertyValuesHolder pvhR = PropertyValuesHolder.ofFloat(View.ROTATION, 0);
+                ObjectAnimator animation = ObjectAnimator.ofPropertyValuesHolder(iconview, pvhR);
+                animation.start();
+            }
+        });
+
         initUI();
                 
     }
@@ -227,4 +275,24 @@ public class MainActivity extends AppCompatActivity implements page_Home.OnFragm
         */
 
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_with_fab, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
+
