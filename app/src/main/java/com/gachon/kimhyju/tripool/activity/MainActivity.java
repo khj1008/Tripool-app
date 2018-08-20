@@ -2,8 +2,6 @@ package com.gachon.kimhyju.tripool.activity;
 
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
-import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -32,13 +30,13 @@ import com.kakao.usermgmt.callback.MeV2ResponseCallback;
 import com.kakao.usermgmt.response.MeV2Response;
 import com.kakao.usermgmt.response.model.Gender;
 import com.kakao.util.helper.log.Logger;
-import com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton;
 import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
 import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
 
-import java.util.ArrayList;
-
-import devlight.io.library.ntb.NavigationTabBar;
+import me.majiajie.pagerbottomtabstrip.MaterialMode;
+import me.majiajie.pagerbottomtabstrip.NavigationController;
+import me.majiajie.pagerbottomtabstrip.PageNavigationView;
+import me.majiajie.pagerbottomtabstrip.listener.OnTabItemSelectedListener;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -49,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements page_Home.OnFragm
     private long backPressedTime = 0;
     private NetworkService networkService;
     private com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton addButton;
+
     FloatingActionMenu actionMenu;
     int user_id;
     String nickName;
@@ -58,6 +57,8 @@ public class MainActivity extends AppCompatActivity implements page_Home.OnFragm
     String email;
     String token;
 
+    NavigationController mNavigationController;
+    int[] testColors = {0xFFF6511D, 0xFFFFB400, 0xFF00A6ED, 0xFF7FB800, 0xFF0D2C54};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,9 +71,41 @@ public class MainActivity extends AppCompatActivity implements page_Home.OnFragm
         networkService= ApplicationController.getInstance().getNetworkService();
         requestMe();
         updateToken(user_id,token);
+        //initUI();
+
+        //네비게이션 탭 적용
+        PageNavigationView pageBottomTabLayout =  findViewById(R.id.tab);
+        PageAdapter pageAdapter=new PageAdapter(getSupportFragmentManager(),this);
+        mNavigationController = pageBottomTabLayout.material()
+                .addItem(R.drawable.home,"체크리스트",testColors[0])
+                .addItem(R.drawable.coin, "정산내역",testColors[1])
+                .addItem(R.drawable.map, "지도",testColors[2])
+                .addItem(R.drawable.memo, "메모",testColors[3])
+                .addItem(R.drawable.menu, "메뉴",testColors[4])
+                .setDefaultColor(0x89FFFFFF)
+                .setMode(MaterialMode.CHANGE_BACKGROUND_COLOR | MaterialMode.HIDE_TEXT)
+                .build();
+        ViewPager viewPager = findViewById(R.id.view_pager);
+        viewPager.setAdapter(pageAdapter);
+
+        mNavigationController.setupWithViewPager(viewPager);
+        mNavigationController.addTabItemSelectedListener(new OnTabItemSelectedListener() {
+            @Override
+            public void onSelected(int index, int old) {
+                Log.i("asd","selected: " + index + " old: " + old);
+            }
+
+            @Override
+            public void onRepeat(int index) {
+                Log.i("asd","onRepeat selected: " + index);
+            }
+        });
+
+
+
         final ImageView iconview=new ImageView(this);
         iconview.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_new_light));
-        addButton=new FloatingActionButton.Builder(this).setContentView(iconview).build();
+        addButton=new com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton.Builder(this).setContentView(iconview).build();
         SubActionButton.Builder subBuilder=new SubActionButton.Builder(this);
         ImageView listIcon=new ImageView(this);
         ImageView coinIcon=new ImageView(this);
@@ -108,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements page_Home.OnFragm
             }
         });
 
-        initUI();
+
                 
     }
 
@@ -167,16 +200,6 @@ public class MainActivity extends AppCompatActivity implements page_Home.OnFragm
         });
     }
 
-    @Override
-    protected void onNewIntent(Intent intent){
-        Log.d("MyMS","onNewIntent() called");
-        super.onNewIntent(intent);
-        page_Home fm = new page_Home();
-        String from=intent.getStringExtra("from");
-        String contents=intent.getStringExtra("contents");
-        Toast.makeText(getApplicationContext(),contents,Toast.LENGTH_LONG).show();
-    }
-
     public void updateToken(int user_id, String token){
         User user=new User();
         user.setUser_id(user_id);
@@ -200,81 +223,8 @@ public class MainActivity extends AppCompatActivity implements page_Home.OnFragm
     }
 
 
-    private void initUI(){
-        PageAdapter pageAdapter=new PageAdapter(getSupportFragmentManager(),this);
-        ViewPager viewPager=findViewById(R.id.view_pager);
-        viewPager.setAdapter(pageAdapter);
-        final String[] colors = getResources().getStringArray(R.array.vertical_ntb);
-        final NavigationTabBar mTab=findViewById(R.id.tabs);
-        final ArrayList<NavigationTabBar.Model> models = new ArrayList<>();
-        models.add(
-                new NavigationTabBar.Model.Builder(
-                        getResources().getDrawable(R.drawable.home),
-                        Color.parseColor(colors[0]))
-                        .build()
-        );
-        models.add(
-                new NavigationTabBar.Model.Builder(
-                        getResources().getDrawable(R.drawable.coin),
-                        Color.parseColor(colors[1]))
-                        .build()
-        );
-        models.add(
-                new NavigationTabBar.Model.Builder(
-                        getResources().getDrawable(R.drawable.map),
-                        Color.parseColor(colors[2]))
-                        .build()
-        );
-        models.add(
-                new NavigationTabBar.Model.Builder(
-                        getResources().getDrawable(R.drawable.memo),
-                        Color.parseColor(colors[3]))
-                        .build()
-        );
-        models.add(
-                new NavigationTabBar.Model.Builder(
-                        getResources().getDrawable(R.drawable.menu),
-                        Color.parseColor(colors[4]))
-                        .build()
-        );
-        mTab.setModels(models);
-        mTab.setViewPager(viewPager, 0);
-        mTab.setBehaviorEnabled(true);
-        mTab.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(final int position, final float positionOffset, final int positionOffsetPixels) {
-            }
 
-            //페이지로 넘어갔을 때 뱃지가 사라짐
-            @Override
-            public void onPageSelected(final int position) {
-                mTab.getModels().get(position).hideBadge();
-            }
 
-            @Override
-            public void onPageScrollStateChanged(final int state) {
-            }
-        });
-
-        //기능마다 이벤트가 발생했을때 뱃지 표시
-        /*
-        mTab.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                for (int i = 0; i < mTab.getModels().size(); i++) {
-                    final NavigationTabBar.Model model = mTab.getModels().get(i);
-                    mTab.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-
-                        }
-                    }, i * 100);
-                }
-            }
-        }, 500);
-        */
-
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -294,5 +244,9 @@ public class MainActivity extends AppCompatActivity implements page_Home.OnFragm
         }
         return super.onOptionsItemSelected(item);
     }
+
+
+
+
 }
 

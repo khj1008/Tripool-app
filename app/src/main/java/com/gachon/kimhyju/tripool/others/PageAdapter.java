@@ -46,6 +46,7 @@ public class PageAdapter extends FragmentPagerAdapter {
     }
 
 
+
     @Override
     public Fragment getItem(int position){
         Fragment fm;
@@ -69,16 +70,14 @@ public class PageAdapter extends FragmentPagerAdapter {
         }
     }
 
+
     @Override
     public int getCount(){
         return PAGE_NUMBER;
     }
 
 
-    @Override
-    public CharSequence getPageTitle(int position){
-        return null;
-    }
+
     private void requestMe(){
         UserManagement.getInstance().me(new MeV2ResponseCallback() {
             @Override

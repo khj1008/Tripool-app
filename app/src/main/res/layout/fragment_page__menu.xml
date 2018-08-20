@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#140d2c54"
     tools:context=".fragment.page_Menu">
 
     <!-- TODO: Update blank fragment layout -->
@@ -17,6 +18,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_margin="50dp"
         android:orientation="vertical"
         android:weightSum="3">
 

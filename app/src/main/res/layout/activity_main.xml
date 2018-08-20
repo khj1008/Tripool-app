@@ -7,23 +7,20 @@
     android:orientation="vertical"
     tools:context=".activity.MainActivity">
 
-    <devlight.io.library.ntb.NavigationTabBar
-        android:id="@+id/tabs"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        app:ntb_badge_bg_color="@android:color/holo_red_dark"
-        app:ntb_badge_gravity="bottom"
-        app:ntb_badge_position="right"
-        app:ntb_badge_title_color="@android:color/background_light"
-        app:ntb_badged="false"
-        app:ntb_scaled="true"
-        app:ntb_swiped="true"
-        app:ntb_tinted="true" />
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/view_pager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"></android.support.v4.view.ViewPager>
+        <me.majiajie.pagerbottomtabstrip.PageNavigationView
+            android:id="@+id/tab"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_alignParentBottom="true"
+
+            android:elevation="10dp" />
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"></android.support.v4.view.ViewPager>
+
 
 </LinearLayout>
