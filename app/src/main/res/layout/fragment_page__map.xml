@@ -1,15 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1400a6ed"
     tools:context=".fragment.page_Map">
-
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="친구목록탭" />
+
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/google_map"
+    android:name="com.google.android.gms.maps.MapFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+</fragment>
+
+    <ImageButton
+        android:id="@+id/placesearch_button"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="right"
+        android:layout_marginRight="55dp"
+        android:layout_marginTop="7dp"
+        android:background="@android:color/transparent"
+        android:src="@android:drawable/ic_search_category_default" />
 
 </FrameLayout>
+

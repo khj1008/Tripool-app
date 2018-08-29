@@ -41,6 +41,7 @@ public class LoginActivity extends AppCompatActivity {
     String email;
     String token;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,16 +49,19 @@ public class LoginActivity extends AppCompatActivity {
         ApplicationController application=ApplicationController.getInstance();
         application.buildNetworkService("210.102.181.158",62005);
         networkService= ApplicationController.getInstance().getNetworkService();
-        if(Session.getCurrentSession().isClosed()){
+
+
+        if (Session.getCurrentSession().isClosed()) {
             callback = new SessionCallback();
             Session.getCurrentSession().addCallback(callback);
 
-        }else {
+        } else {
             final Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra("action","launch");
+            intent.putExtra("action", "launch");
             startActivity(intent);
             finish();
         }
+
     }
 
     @Override
@@ -183,5 +187,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
 }

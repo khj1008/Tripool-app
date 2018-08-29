@@ -57,6 +57,8 @@ public class MainActivity extends AppCompatActivity implements page_Home.OnFragm
     String email;
     String token;
 
+
+
     NavigationController mNavigationController;
     int[] testColors = {0xFFF6511D, 0xFFFFB400, 0xFF00A6ED, 0xFF7FB800, 0xFF0D2C54};
 
@@ -71,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements page_Home.OnFragm
         networkService= ApplicationController.getInstance().getNetworkService();
         requestMe();
         updateToken(user_id,token);
+
         //initUI();
 
         //네비게이션 탭 적용
@@ -87,6 +90,9 @@ public class MainActivity extends AppCompatActivity implements page_Home.OnFragm
                 .build();
         ViewPager viewPager = findViewById(R.id.view_pager);
         viewPager.setAdapter(pageAdapter);
+        viewPager.setOffscreenPageLimit(4);
+
+
 
         mNavigationController.setupWithViewPager(viewPager);
         mNavigationController.addTabItemSelectedListener(new OnTabItemSelectedListener() {
@@ -99,6 +105,8 @@ public class MainActivity extends AppCompatActivity implements page_Home.OnFragm
             public void onRepeat(int index) {
                 Log.i("asd","onRepeat selected: " + index);
             }
+
+
         });
 
 
