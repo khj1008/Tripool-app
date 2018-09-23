@@ -2,8 +2,11 @@ package com.gachon.kimhyju.tripool.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.gachon.kimhyju.tripool.R;
@@ -40,15 +43,18 @@ public class LoginActivity extends AppCompatActivity {
     Gender gender;
     String email;
     String token;
-
+    com.kakao.usermgmt.LoginButton kakaologin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_login);
         ApplicationController application=ApplicationController.getInstance();
         application.buildNetworkService("210.102.181.158",62005);
         networkService= ApplicationController.getInstance().getNetworkService();
+        kakaologin=findViewById(R.id.com_kakao_login);
 
 
         if (Session.getCurrentSession().isClosed()) {
@@ -56,10 +62,18 @@ public class LoginActivity extends AppCompatActivity {
             Session.getCurrentSession().addCallback(callback);
 
         } else {
-            final Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra("action", "launch");
-            startActivity(intent);
-            finish();
+            kakaologin.setVisibility(View.INVISIBLE);
+            Handler handler =new Handler();
+            handler.postDelayed(new Runnable(){
+                @Override
+                public void run() {
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    intent.putExtra("action", "launch");
+                    startActivity(intent);
+                    finish();
+                }
+            }, 500);
+
         }
 
     }

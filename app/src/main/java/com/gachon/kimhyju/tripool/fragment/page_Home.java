@@ -4,11 +4,17 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.gachon.kimhyju.tripool.R;
+
+import java.net.URISyntaxException;
+
+import io.socket.client.IO;
+import io.socket.emitter.Emitter;
 
 
 /**
@@ -19,14 +25,22 @@ import com.gachon.kimhyju.tripool.R;
  * Use the {@link page_Home#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class page_Home extends Fragment {
+public class page_Home extends Fragment{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
     Context context;
-    String regId;
+
+    private io.socket.client.Socket socket;
+    {
+        try{
+            socket = IO.socket("http://210.102.181.158:62005");
+        }catch (URISyntaxException ue){
+            ue.printStackTrace();
+        }
+    }
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -58,6 +72,8 @@ public class page_Home extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        socket.on("checklistUpdate",checklistUpdate);
+        socket.connect();
 
 
 
@@ -68,6 +84,7 @@ public class page_Home extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.fragment_page__home,container,false);
+
 
 
         return view;
@@ -97,6 +114,9 @@ public class page_Home extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+
+        socket.disconnect();
+        socket.off("checklistUpdate", checklistUpdate);
     }
 
     /**
@@ -114,7 +134,18 @@ public class page_Home extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
+    private Emitter.Listener checklistUpdate = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            Log.e("socket.connected","checklistUpdate");
+        }
+    };
 
 
 
 }
+
+
+
+
+

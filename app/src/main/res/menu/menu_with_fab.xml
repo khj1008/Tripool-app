@@ -4,8 +4,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.oguzdev.circularfloatingactionmenu.samples.MenuWithFABActivity" >
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/add_checklist"
         android:orderInCategory="100"
         android:title="action_settings"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/add_expense"
+        android:orderInCategory="100"
+        android:title="action_settings"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/add_marker"
+        android:orderInCategory="100"
+        android:title="action_settings"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/add_memo"
+        android:orderInCategory="100"
+        android:title="action_settings"
+        app:showAsAction="always" />
+
 </menu>

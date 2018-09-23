@@ -11,6 +11,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Toast;
 
 import com.baoyz.swipemenulistview.SwipeMenu;
@@ -34,7 +36,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class TriplistActivity extends AppCompatActivity implements SwipeMenuListView.OnMenuItemClickListener {
+public class TriplistActivity extends AppCompatActivity implements SwipeMenuListView.OnMenuItemClickListener, AdapterView.OnItemClickListener {
     int user_id, creator_id;
     String trip_id;
     String date_s, date_e;
@@ -102,6 +104,7 @@ public class TriplistActivity extends AppCompatActivity implements SwipeMenuList
         cal=new GregorianCalendar();
         listView=findViewById(R.id.triplist_view);
         listView.setOnMenuItemClickListener(this);
+        listView.setOnItemClickListener(this);
         tripAdapter=new TripAdapter(getApplicationContext());
 
 
@@ -304,4 +307,31 @@ public class TriplistActivity extends AppCompatActivity implements SwipeMenuList
                 getResources().getDisplayMetrics());
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        Trip trip=(Trip)tripAdapter.getItem(i);
+        Log.e("position",String.valueOf(i));
+        trip_id=trip.getTrip_id();
+        selectTrip(trip_id,user_id);
+        finish();
+    }
+
+    public void selectTrip(String trip_id,int user_id){
+        Call<Trip> selecttrip=networkService.select_trip(trip_id,user_id);
+        selecttrip.enqueue(new Callback<Trip>(){
+            @Override
+            public void onResponse(Call<Trip> trip, Response<Trip> response){
+                if(response.isSuccessful()){
+
+                }else{
+                    int statusCode=response.code();
+                    Log.d("MyTag(onResponse)","응답코드 : "+statusCode);
+                }
+            }
+            @Override
+            public void onFailure(Call<Trip> trip, Throwable t){
+                Log.d("MyTag(onFailure)","응답코드 : "+t.getMessage());
+            }
+        });
+    }
 }

@@ -34,6 +34,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if(noti_click.equals("FRIEND_REQUEST")) {
             Intent click_intent = new Intent(noti_click);
             click_intent.putExtra("friend_id", Integer.valueOf(remoteMessage.getData().get("user_id")));
+            Log.e("user_id",remoteMessage.getData().get("user_id"));
             click_intent.putExtra("nickName", remoteMessage.getData().get("nickName"));
             click_intent.putExtra("email", remoteMessage.getData().get("email"));
             click_intent.putExtra("thumbnail_image", remoteMessage.getData().get("thumbnail_image"));

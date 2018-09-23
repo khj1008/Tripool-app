@@ -1,5 +1,6 @@
 package com.gachon.kimhyju.tripool.others;
 
+import com.gachon.kimhyju.tripool.object.Checklist;
 import com.gachon.kimhyju.tripool.object.Trip;
 import com.gachon.kimhyju.tripool.object.User;
 
@@ -47,4 +48,14 @@ public interface NetworkService {
     //Trip_join
     @POST("/Trip_join/{trip_id}/{user_id}")
     Call<Trip> join_trip(@Path("trip_id")String trip_id, @Path("user_id") int user_id);
+
+    //Trip_main
+    @PUT("/Trip_main/{trip_id}/{user_id}")
+    Call<Trip> select_trip(@Path("trip_id")String trip_id, @Path("user_id") int user_id);
+    @GET("/Trip_main/{user_id}")
+    Call<Trip> get_maintrip(@Path("user_id") int user_id);
+
+    //Checklist
+    @POST("/Checklist")
+    Call<Checklist> add_checklist(@Body Checklist checklist);
 }

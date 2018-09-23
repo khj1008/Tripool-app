@@ -1,16 +1,16 @@
 package com.gachon.kimhyju.tripool.activity;
 
-import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.gachon.kimhyju.tripool.R;
@@ -19,6 +19,7 @@ import com.gachon.kimhyju.tripool.fragment.page_Home;
 import com.gachon.kimhyju.tripool.fragment.page_Map;
 import com.gachon.kimhyju.tripool.fragment.page_Memo;
 import com.gachon.kimhyju.tripool.fragment.page_Menu;
+import com.gachon.kimhyju.tripool.object.Trip;
 import com.gachon.kimhyju.tripool.object.User;
 import com.gachon.kimhyju.tripool.others.ApplicationController;
 import com.gachon.kimhyju.tripool.others.NetworkService;
@@ -30,9 +31,10 @@ import com.kakao.usermgmt.callback.MeV2ResponseCallback;
 import com.kakao.usermgmt.response.MeV2Response;
 import com.kakao.usermgmt.response.model.Gender;
 import com.kakao.util.helper.log.Logger;
-import com.oguzdev.circularfloatingactionmenu.library.FloatingActionMenu;
-import com.oguzdev.circularfloatingactionmenu.library.SubActionButton;
 
+import java.net.URISyntaxException;
+
+import io.socket.client.IO;
 import me.majiajie.pagerbottomtabstrip.MaterialMode;
 import me.majiajie.pagerbottomtabstrip.NavigationController;
 import me.majiajie.pagerbottomtabstrip.PageNavigationView;
@@ -42,21 +44,30 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements page_Home.OnFragmentInteractionListener, page_Menu.OnFragmentInteractionListener, page_Memo.OnFragmentInteractionListener,
-        page_Map.OnFragmentInteractionListener, page_Caculate.OnFragmentInteractionListener {
+        page_Map.OnFragmentInteractionListener, page_Caculate.OnFragmentInteractionListener, View.OnClickListener {
     private final long FINISH_INTERVAL_TIME = 2000;
     private long backPressedTime = 0;
     private NetworkService networkService;
-    private com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton addButton;
+    private FloatingActionButton floatingAddButton;
+    private io.socket.client.Socket socket;
+    {
+        try{
+            socket = IO.socket("http://210.102.181.158:62005");
+        }catch (URISyntaxException ue){
+            ue.printStackTrace();
+        }
+    }
 
-    FloatingActionMenu actionMenu;
     int user_id;
+    int selected_Page;
     String nickName;
     String profile_image;
     String thumbnail_image;
     Gender gender;
     String email;
     String token;
-
+    Trip maintrip;
+    String maintrip_Id;
 
 
     NavigationController mNavigationController;
@@ -65,6 +76,8 @@ public class MainActivity extends AppCompatActivity implements page_Home.OnFragm
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
 
         //서버에서 데이터를 받아오기
@@ -73,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements page_Home.OnFragm
         networkService= ApplicationController.getInstance().getNetworkService();
         requestMe();
         updateToken(user_id,token);
+
 
         //initUI();
 
@@ -91,66 +105,40 @@ public class MainActivity extends AppCompatActivity implements page_Home.OnFragm
         ViewPager viewPager = findViewById(R.id.view_pager);
         viewPager.setAdapter(pageAdapter);
         viewPager.setOffscreenPageLimit(4);
-
-
-
         mNavigationController.setupWithViewPager(viewPager);
         mNavigationController.addTabItemSelectedListener(new OnTabItemSelectedListener() {
             @Override
             public void onSelected(int index, int old) {
+                selected_Page=index;
                 Log.i("asd","selected: " + index + " old: " + old);
             }
-
             @Override
             public void onRepeat(int index) {
                 Log.i("asd","onRepeat selected: " + index);
             }
-
-
         });
 
-
-
-        final ImageView iconview=new ImageView(this);
-        iconview.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_new_light));
-        addButton=new com.oguzdev.circularfloatingactionmenu.library.FloatingActionButton.Builder(this).setContentView(iconview).build();
-        SubActionButton.Builder subBuilder=new SubActionButton.Builder(this);
-        ImageView listIcon=new ImageView(this);
-        ImageView coinIcon=new ImageView(this);
-        ImageView mapIcon=new ImageView(this);
-        ImageView memoIcon=new ImageView(this);
-        listIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_check));
-        coinIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_coin));
-        mapIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_map));
-        memoIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_action_memo));
-        actionMenu=new FloatingActionMenu.Builder(this)
-                .addSubActionView(subBuilder.setContentView(listIcon).build())
-                .addSubActionView(subBuilder.setContentView(coinIcon).build())
-                .addSubActionView(subBuilder.setContentView(mapIcon).build())
-                .addSubActionView(subBuilder.setContentView(memoIcon).build())
-                .attachTo(addButton).build();
-        actionMenu.setStateChangeListener(new FloatingActionMenu.MenuStateChangeListener() {
-            @Override
-            public void onMenuOpened(FloatingActionMenu menu) {
-                // Rotate the icon of rightLowerButton 45 degrees clockwise
-                iconview.setRotation(0);
-                PropertyValuesHolder pvhR = PropertyValuesHolder.ofFloat(View.ROTATION, 45);
-                ObjectAnimator animation = ObjectAnimator.ofPropertyValuesHolder(iconview, pvhR);
-                animation.start();
-            }
-
-            @Override
-            public void onMenuClosed(FloatingActionMenu menu) {
-                // Rotate the icon of rightLowerButton 45 degrees counter-clockwise
-                iconview.setRotation(45);
-                PropertyValuesHolder pvhR = PropertyValuesHolder.ofFloat(View.ROTATION, 0);
-                ObjectAnimator animation = ObjectAnimator.ofPropertyValuesHolder(iconview, pvhR);
-                animation.start();
-            }
-        });
-
-
+        floatingAddButton=findViewById(R.id.floatingAddButton);
+        floatingAddButton.setOnClickListener(this);
                 
+    }
+
+    @Override
+    public void onClick(View v){
+        switch (selected_Page){
+            case 0:
+                Intent intent=new Intent(getApplicationContext(), AddChecklistActivity.class);
+                intent.putExtra("user_Id",user_id);
+                intent.putExtra("trip_Id",maintrip_Id);
+                startActivity(intent);
+                break;
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+        }
     }
 
 
@@ -204,6 +192,7 @@ public class MainActivity extends AppCompatActivity implements page_Home.OnFragm
                 gender=result.getKakaoAccount().getGender();
                 email=result.getKakaoAccount().getEmail();
                 token= FirebaseInstanceId.getInstance().getToken();
+                get_maintrip(user_id);
             }
         });
     }
@@ -247,11 +236,48 @@ public class MainActivity extends AppCompatActivity implements page_Home.OnFragm
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+        switch(id){
+            case R.id.add_checklist:
+                Toast.makeText(getApplicationContext(),"checklist clicked",Toast.LENGTH_LONG).show();
+                return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    protected void onResume(){
+        get_maintrip(user_id);
+        super.onResume();
+    }
+
+
+    public void get_maintrip(int user_id){
+        Call<Trip> getmaintrip=networkService.get_maintrip(user_id);
+        getmaintrip.enqueue(new Callback<Trip>(){
+            @Override
+            public void onResponse(Call<Trip> trip, Response<Trip> response){
+                if(response.isSuccessful()){
+                    if(response==null){
+                        Log.e("error","불러오지못함");
+                        return;
+                    }else {
+                        maintrip = response.body();
+                        maintrip_Id=maintrip.getTrip_id();
+                        Toast.makeText(getApplicationContext(), maintrip.getTrip_id(), Toast.LENGTH_LONG).show();
+                    }
+                }else{
+                    int statusCode=response.code();
+                    Log.d("MyTag(onResponse)","응답코드 : "+statusCode);
+                }
+            }
+            @Override
+            public void onFailure(Call<Trip> trip, Throwable t){
+                Log.d("MyTag(onFailure)","응답코드 : "+t.getMessage());
+            }
+        });
+    }
+
 
 
 

@@ -191,6 +191,7 @@ public class page_Menu extends Fragment implements View.OnClickListener {
                                     @Override
                                     public void onSuccess(Long userId) {
                                             deleteUser(user_id);
+                                            getActivity().finish();
                                     }
                                 });
                                 dialog.dismiss();
