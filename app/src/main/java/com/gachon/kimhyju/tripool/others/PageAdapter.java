@@ -13,12 +13,17 @@ import com.gachon.kimhyju.tripool.fragment.page_Home;
 import com.gachon.kimhyju.tripool.fragment.page_Map;
 import com.gachon.kimhyju.tripool.fragment.page_Memo;
 import com.gachon.kimhyju.tripool.fragment.page_Menu;
+import com.gachon.kimhyju.tripool.object.Trip;
 import com.kakao.network.ErrorResult;
 import com.kakao.usermgmt.UserManagement;
 import com.kakao.usermgmt.callback.MeV2ResponseCallback;
 import com.kakao.usermgmt.response.MeV2Response;
 import com.kakao.usermgmt.response.model.Gender;
 import com.kakao.util.helper.log.Logger;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class PageAdapter extends FragmentPagerAdapter {
     private static int PAGE_NUMBER=5;
@@ -32,6 +37,9 @@ public class PageAdapter extends FragmentPagerAdapter {
     String thumbnail_image;
     Gender gender;
     String email;
+    Trip maintrip;
+    String maintrip_Id;
+    private NetworkService networkService;
     public PageAdapter(FragmentManager fm, Context mcontext){
         super(fm);
         requestMe();
@@ -43,6 +51,10 @@ public class PageAdapter extends FragmentPagerAdapter {
         bundle.putString("gender",String.valueOf(gender));
         bundle.putString("email",email);
         context=mcontext;
+
+        ApplicationController application=ApplicationController.getInstance();
+        application.buildNetworkService("210.102.181.158",62005);
+        networkService= ApplicationController.getInstance().getNetworkService();
     }
 
 
@@ -102,5 +114,36 @@ public class PageAdapter extends FragmentPagerAdapter {
                 email=result.getKakaoAccount().getEmail();
             }
         });
+    }
+
+    public void get_maintrip(int user_id){
+        maintrip=new Trip();
+        Call<Trip> getmaintrip=networkService.get_maintrip(user_id);
+        getmaintrip.enqueue(new Callback<Trip>(){
+            @Override
+            public void onResponse(Call<Trip> trip, Response<Trip> response){
+                if(response.isSuccessful()){
+                    if(response==null){
+                        Log.e("error","불러오지못함");
+                        return;
+                    }else {
+                        maintrip = response.body();
+                        maintrip_Id=maintrip.getTrip_id();
+                    }
+                }else{
+                    int statusCode=response.code();
+                    Log.d("MyTag(onResponse)","응답코드 : "+statusCode);
+                }
+            }
+            @Override
+            public void onFailure(Call<Trip> trip, Throwable t){
+                Log.d("MyTag(onFailure)","응답코드 : "+t.getMessage());
+            }
+        });
+    }
+
+    @Override
+    public int getItemPosition(Object object){
+        return POSITION_NONE;
     }
 }

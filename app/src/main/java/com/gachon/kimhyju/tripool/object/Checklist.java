@@ -1,54 +1,54 @@
 package com.gachon.kimhyju.tripool.object;
 
 public class Checklist {
-    String ChecklistName;
-    String trip_Id;
-    int user_Id;
-    int ChecklistId;
+    String item_name;
+    String trip_id;
+    int user_id;
+    int item_id;
     int isChecked;
 
-    public Checklist(String ChecklistName, String trip_Id, int user_Id, int isChecked) {
-        this.ChecklistName = ChecklistName;
-        this.trip_Id = trip_Id;
-        this.user_Id = user_Id;
+    public Checklist(String item_name, String trip_id, int user_id, int isChecked) {
+        this.item_name = item_name;
+        this.trip_id = trip_id;
+        this.user_id = user_id;
         this.isChecked = isChecked;
     }
 
-    public Checklist(String ChecklistName, String trip_Id, int user_Id) {
-        this.ChecklistName = ChecklistName;
-        this.trip_Id = trip_Id;
-        this.user_Id = user_Id;
+    public Checklist(String item_name, String trip_id, int user_id) {
+        this.item_name = item_name;
+        this.trip_id = trip_id;
+        this.user_id = user_id;
     }
 
-    public String getTrip_Id() {
-        return trip_Id;
+    public String getTrip_id() {
+        return trip_id;
     }
 
-    public void setTrip_Id(String trip_Id) {
-        this.trip_Id = trip_Id;
+    public void setTrip_id(String trip_id) {
+        this.trip_id = trip_id;
     }
 
-    public int getUser_Id() {
-        return user_Id;
+    public int getUser_id() {
+        return user_id;
     }
 
-    public void setUser_Id(int user_Id) {
-        this.user_Id = user_Id;
+    public void setUser_id(int user_id) {
+        this.user_id = user_id;
     }
-    public String getChecklistName() {
-        return ChecklistName;
-    }
-
-    public void setChecklistName(String checklistName) {
-        ChecklistName = checklistName;
+    public String getItem_name() {
+        return item_name;
     }
 
-    public int getChecklistId() {
-        return ChecklistId;
+    public void setItem_name(String item_name) {
+        this.item_name = item_name;
     }
 
-    public void setChecklistId(int checklistId) {
-        ChecklistId = checklistId;
+    public int getItem_id() {
+        return item_id;
+    }
+
+    public void setItem_id(int item_id) {
+        this.item_id = item_id;
     }
 
     public int getIsChecked() {

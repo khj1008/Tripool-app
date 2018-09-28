@@ -44,7 +44,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements page_Home.OnFragmentInteractionListener, page_Menu.OnFragmentInteractionListener, page_Memo.OnFragmentInteractionListener,
-        page_Map.OnFragmentInteractionListener, page_Caculate.OnFragmentInteractionListener, View.OnClickListener {
+        page_Map.OnFragmentInteractionListener, page_Caculate.OnFragmentInteractionListener, View.OnClickListener, page_Map.onMarkerAddListener {
     private final long FINISH_INTERVAL_TIME = 2000;
     private long backPressedTime = 0;
     private NetworkService networkService;
@@ -60,6 +60,8 @@ public class MainActivity extends AppCompatActivity implements page_Home.OnFragm
 
     int user_id;
     int selected_Page;
+    double latitude;
+    double longitude;
     String nickName;
     String profile_image;
     String thumbnail_image;
@@ -68,6 +70,8 @@ public class MainActivity extends AppCompatActivity implements page_Home.OnFragm
     String token;
     Trip maintrip;
     String maintrip_Id;
+    PageAdapter pageAdapter;
+
 
 
     NavigationController mNavigationController;
@@ -86,13 +90,14 @@ public class MainActivity extends AppCompatActivity implements page_Home.OnFragm
         networkService= ApplicationController.getInstance().getNetworkService();
         requestMe();
         updateToken(user_id,token);
-
+        floatingAddButton=findViewById(R.id.floatingAddButton);
+        floatingAddButton.setOnClickListener(this);
 
         //initUI();
 
         //네비게이션 탭 적용
         PageNavigationView pageBottomTabLayout =  findViewById(R.id.tab);
-        PageAdapter pageAdapter=new PageAdapter(getSupportFragmentManager(),this);
+        pageAdapter=new PageAdapter(getSupportFragmentManager(),this);
         mNavigationController = pageBottomTabLayout.material()
                 .addItem(R.drawable.home,"체크리스트",testColors[0])
                 .addItem(R.drawable.coin, "정산내역",testColors[1])
@@ -111,6 +116,11 @@ public class MainActivity extends AppCompatActivity implements page_Home.OnFragm
             public void onSelected(int index, int old) {
                 selected_Page=index;
                 Log.i("asd","selected: " + index + " old: " + old);
+                if(index==4){
+                    floatingAddButton.setVisibility(View.INVISIBLE);
+                }else{
+                    floatingAddButton.setVisibility(View.VISIBLE);
+                }
             }
             @Override
             public void onRepeat(int index) {
@@ -118,23 +128,29 @@ public class MainActivity extends AppCompatActivity implements page_Home.OnFragm
             }
         });
 
-        floatingAddButton=findViewById(R.id.floatingAddButton);
-        floatingAddButton.setOnClickListener(this);
-                
+
+
     }
 
     @Override
     public void onClick(View v){
         switch (selected_Page){
             case 0:
-                Intent intent=new Intent(getApplicationContext(), AddChecklistActivity.class);
-                intent.putExtra("user_Id",user_id);
-                intent.putExtra("trip_Id",maintrip_Id);
-                startActivity(intent);
+                Intent homeintent=new Intent(getApplicationContext(), AddChecklistActivity.class);
+                homeintent.putExtra("user_Id",user_id);
+                homeintent.putExtra("trip_Id",maintrip_Id);
+                startActivity(homeintent);
                 break;
             case 1:
                 break;
             case 2:
+                Intent mapintent=new Intent(getApplicationContext(),AddMarkerActivity.class);
+                mapintent.putExtra("latitude",latitude);
+                mapintent.putExtra("longitude",longitude);
+                mapintent.putExtra("user_id",user_id);
+                mapintent.putExtra("trip_id",maintrip_Id);
+                mapintent.putExtra("user_nickName",nickName);
+                startActivity(mapintent);
                 break;
             case 3:
                 break;
@@ -247,8 +263,8 @@ public class MainActivity extends AppCompatActivity implements page_Home.OnFragm
 
     @Override
     protected void onResume(){
-        get_maintrip(user_id);
         super.onResume();
+        get_maintrip(user_id);
     }
 
 
@@ -264,7 +280,6 @@ public class MainActivity extends AppCompatActivity implements page_Home.OnFragm
                     }else {
                         maintrip = response.body();
                         maintrip_Id=maintrip.getTrip_id();
-                        Toast.makeText(getApplicationContext(), maintrip.getTrip_id(), Toast.LENGTH_LONG).show();
                     }
                 }else{
                     int statusCode=response.code();
@@ -278,6 +293,11 @@ public class MainActivity extends AppCompatActivity implements page_Home.OnFragm
         });
     }
 
+    @Override
+    public void onMarkerAdd(double latitude, double longitude){
+
+        Toast.makeText(getApplicationContext(),"latitude : "+latitude+"longitude : "+longitude,Toast.LENGTH_LONG).show();
+    }
 
 
 

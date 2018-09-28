@@ -58,4 +58,6 @@ public interface NetworkService {
     //Checklist
     @POST("/Checklist")
     Call<Checklist> add_checklist(@Body Checklist checklist);
+    @GET("/Checklist/{trip_id}")
+    Call<List<Checklist>> get_checklist(@Path("trip_id") String trip_id);
 }

@@ -5,16 +5,16 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="5dp"
-    tools:context=".activity.AddChecklistActivity">
+    android:padding="8dp"
+    tools:context=".activity.AddMarkerActivity">
 
 
     <TextView
-        android:id="@+id/Addchecklist"
+        android:id="@+id/AddMarker"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        android:text="체크리스트 추가하기"
+        android:text="표시 지점에 마커 추가하기"
         android:textAlignment="center" />
 
     <View
@@ -24,14 +24,46 @@
         android:layout_margin="5dp"
         android:background="@android:color/darker_gray" />
 
-    <EditText
-        android:id="@+id/Addchecklist_Text"
+    <LinearLayout
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:text="제목 :" />
+
+        <EditText
+            android:id="@+id/AddMarker_Name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"
+            android:ems="10"
+            android:inputType="textPersonName" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="3dp"
+        android:layout_marginTop="3dp"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:text="내용" />
+
+    <EditText
+        android:id="@+id/AddMarekr_Content"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
         android:ems="10"
-        android:inputType="textPersonName" />
+        android:inputType="textMultiLine" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -39,14 +71,14 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/Addchecklist_Ok"
+            android:id="@+id/AddMarker_Ok"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="확 인" />
 
         <Button
-            android:id="@+id/Addchecklist_Cancel"
+            android:id="@+id/AddMarker_Cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"

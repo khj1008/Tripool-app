@@ -1,5 +1,6 @@
 package com.gachon.kimhyju.tripool.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -52,7 +53,7 @@ public class page_Menu extends Fragment implements View.OnClickListener {
     Button button;
     ImageButton triplistButton;
     ImageButton friendlistButton;
-
+    Activity activity;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -114,7 +115,7 @@ public class page_Menu extends Fragment implements View.OnClickListener {
                 onClickUnlink();
                 break;
             case R.id.triplistButton:
-                Intent tripintent=new Intent(mcontext,TriplistActivity.class);
+                Intent tripintent=new Intent(getActivity(),TriplistActivity.class);
                 tripintent.putExtra("user_id",user_id);
                 startActivity(tripintent);
                 break;
@@ -195,7 +196,6 @@ public class page_Menu extends Fragment implements View.OnClickListener {
                                     }
                                 });
                                 dialog.dismiss();
-                                //getActivity().finish();
                             }
                         })
                 .setNegativeButton(getString(R.string.com_kakao_cancel_button),

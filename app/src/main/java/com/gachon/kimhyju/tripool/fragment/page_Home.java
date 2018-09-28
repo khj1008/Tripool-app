@@ -8,13 +8,28 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 import com.gachon.kimhyju.tripool.R;
+import com.gachon.kimhyju.tripool.object.Checklist;
+import com.gachon.kimhyju.tripool.object.Trip;
+import com.gachon.kimhyju.tripool.others.ApplicationController;
+import com.gachon.kimhyju.tripool.others.ChecklistAdapter;
+import com.gachon.kimhyju.tripool.others.NetworkService;
+import com.kakao.network.ErrorResult;
+import com.kakao.usermgmt.UserManagement;
+import com.kakao.usermgmt.callback.MeV2ResponseCallback;
+import com.kakao.usermgmt.response.MeV2Response;
+import com.kakao.util.helper.log.Logger;
 
 import java.net.URISyntaxException;
+import java.util.List;
 
 import io.socket.client.IO;
 import io.socket.emitter.Emitter;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 /**
@@ -32,6 +47,12 @@ public class page_Home extends Fragment{
     private static final String ARG_PARAM2 = "param2";
 
     Context context;
+    ListView checklist_view;
+    private NetworkService networkService;
+    ChecklistAdapter checklistAdapter;
+    Trip maintrip;
+    String maintrip_Id;
+    int user_id;
 
     private io.socket.client.Socket socket;
     {
@@ -69,11 +90,15 @@ public class page_Home extends Fragment{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            maintrip_Id = getArguments().getString("trip_id");
+           user_id = getArguments().getInt("user_id");
         }
+        ApplicationController application=ApplicationController.getInstance();
+        application.buildNetworkService("210.102.181.158",62005);
+        networkService= ApplicationController.getInstance().getNetworkService();
         socket.on("checklistUpdate",checklistUpdate);
         socket.connect();
+
 
 
 
@@ -84,9 +109,10 @@ public class page_Home extends Fragment{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.fragment_page__home,container,false);
-
-
-
+        Log.e("user_id in page_Home",String.valueOf(user_id));
+        checklistAdapter=new ChecklistAdapter(getContext());
+        checklist_view=view.findViewById(R.id.checklist);
+        requestMe();
         return view;
     }
 
@@ -108,6 +134,7 @@ public class page_Home extends Fragment{
                     + " must implement OnFragmentInteractionListener");
         }
 
+
     }
 
     @Override
@@ -115,8 +142,8 @@ public class page_Home extends Fragment{
         super.onDetach();
         mListener = null;
 
-        socket.disconnect();
-        socket.off("checklistUpdate", checklistUpdate);
+        //socket.disconnect();
+        //socket.off("checklistUpdate", checklistUpdate);
     }
 
     /**
@@ -134,14 +161,97 @@ public class page_Home extends Fragment{
         void onFragmentInteraction(Uri uri);
     }
 
+    ///체크리스트에 변경이 발생했을때 업데이트
     private Emitter.Listener checklistUpdate = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
             Log.e("socket.connected","checklistUpdate");
+            getChecklist(maintrip_Id);
         }
     };
 
+    public void getChecklist(String trip_id){
+        checklistAdapter.clear();
+        Call<List<Checklist>> getchecklist=networkService.get_checklist(trip_id);
+        getchecklist.enqueue(new Callback<List<Checklist>>(){
+            @Override
+            public void onResponse(Call<List<Checklist>> checklist, Response<List<Checklist>> response){
+                if(response.isSuccessful()){
+                    List<Checklist> checkList=response.body();
+                    for(Checklist checklistitem : checkList){
+                        checklistAdapter.addItem(checklistitem);
+                    }
+                    checklist_view.setAdapter(checklistAdapter);
+                    checklistAdapter.notifyDataSetChanged();
 
+                }else{
+                    int statusCode=response.code();
+                    Log.d("MyTag(onResponse)","응답코드 : "+statusCode);
+                }
+
+            }
+            @Override
+            public void onFailure(Call<List<Checklist>> checklist, Throwable t){
+                Log.d("MyTag(onFailure)","응답코드 : "+t.getMessage());
+            }
+
+        });
+
+    }
+
+    private void requestMe(){
+        UserManagement.getInstance().me(new MeV2ResponseCallback() {
+            @Override
+            public void onFailure(ErrorResult errorResult) {
+                String message = "failed to get user info. msg=" + errorResult;
+                Logger.d(message);
+            }
+
+            @Override
+            public void onSessionClosed(ErrorResult errorResult) {
+                Log.d("error", "Session Closed Error is " + errorResult.toString());
+            }
+
+
+            @Override
+            public void onSuccess(MeV2Response result) {
+                user_id=(int)result.getId();
+                get_maintrip(user_id);
+            }
+        });
+    }
+
+    public void get_maintrip(int user_id){
+        Call<Trip> getmaintrip=networkService.get_maintrip(user_id);
+        getmaintrip.enqueue(new Callback<Trip>(){
+            @Override
+            public void onResponse(Call<Trip> trip, Response<Trip> response){
+                if(response.isSuccessful()){
+                    if(response==null){
+                        Log.e("error","불러오지못함");
+                        return;
+                    }else {
+                        maintrip = response.body();
+                        maintrip_Id=maintrip.getTrip_id();
+                    }
+                    getChecklist(maintrip_Id);
+                }else{
+                    int statusCode=response.code();
+                    Log.d("MyTag(onResponse)","응답코드 : "+statusCode);
+                }
+            }
+            @Override
+            public void onFailure(Call<Trip> trip, Throwable t){
+                Log.d("MyTag(onFailure)","응답코드 : "+t.getMessage());
+            }
+        });
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        get_maintrip(user_id);
+    }
 
 }
 

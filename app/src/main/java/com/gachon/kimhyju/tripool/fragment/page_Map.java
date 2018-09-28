@@ -48,7 +48,7 @@ import static android.app.Activity.RESULT_OK;
  * Use the {@link page_Map#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class page_Map extends Fragment implements OnMapReadyCallback, View.OnClickListener{
+public class page_Map extends Fragment implements OnMapReadyCallback, View.OnClickListener, GoogleMap.OnMapClickListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -61,6 +61,7 @@ public class page_Map extends Fragment implements OnMapReadyCallback, View.OnCli
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private onMarkerAddListener onMarkerAddListener;
     Context mContext;
 
     int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
@@ -143,9 +144,11 @@ public class page_Map extends Fragment implements OnMapReadyCallback, View.OnCli
         mContext=context;
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
-        } else {
+            onMarkerAddListener = (onMarkerAddListener) context;
+        }else{
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                + " must implement OnFragmentInteractionListener");
+
         }
     }
 
@@ -194,6 +197,7 @@ public class page_Map extends Fragment implements OnMapReadyCallback, View.OnCli
         map.addMarker(new MarkerOptions()
                 .position(new LatLng(0, 0))
                 .title("Marker"));
+        mMap.setOnMapClickListener(this);
     }
 
     private void updateLocationUI() {
@@ -279,6 +283,7 @@ public class page_Map extends Fragment implements OnMapReadyCallback, View.OnCli
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(search_place, DEFAULT_ZOOM));
                 if(currentMarker!=null)currentMarker.remove();
                 currentMarker=mMap.addMarker(new MarkerOptions().position(search_place));
+                onMarkerAddListener.onMarkerAdd(search_place.latitude,search_place.longitude);
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(getContext(), data);
                 // TODO: Handle the error.
@@ -288,6 +293,19 @@ public class page_Map extends Fragment implements OnMapReadyCallback, View.OnCli
         }
     }
 
+    @Override
+    public void onMapClick(LatLng point){
+        search_place=point;
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, DEFAULT_ZOOM));
+        if(currentMarker!=null)currentMarker.remove();
+        currentMarker=mMap.addMarker(new MarkerOptions().position(point));
+        onMarkerAddListener.onMarkerAdd(point.latitude,point.longitude);
+
+    }
+
+    public interface onMarkerAddListener{
+        public void onMarkerAdd(double latitude, double longitude);
+    }
 
 
 }
